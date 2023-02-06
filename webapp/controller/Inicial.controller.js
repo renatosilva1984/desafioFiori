@@ -47,6 +47,8 @@ sap.ui.define([
                     }
                 ]
             };
+           
+           // Imagens = [];
             
             //Criação do Modelo de Exibição na Tela
 
@@ -55,16 +57,78 @@ sap.ui.define([
             //view.setModel(ImageModel,"ModeloImagem");
             },
 
-
-
             onPressBuscar: function(){
-
            //instancia do objeto input da tela
             let inputBusca = this.byId("inpBusca");
            // coleta o valor na variável.  
             let query = inputBusca.getValue();
            
-             alert(this.query)   
+            // alert(query)   
+
+            const settings = {
+                "async": true,
+                "crossDomain": true,
+
+            //concatenate
+            
+                "url": "https://contextualwebsearch-websearch-v1.p.rapidapi.com/api/Search/ImageSearchAPI?q=" 
+                + query 
+                + "&pageNumber=1&pageSize=10&autoCorrect=true",
+                "method": "GET",
+                "headers": {
+                    "X-RapidAPI-Key": "9841f938dfmshc9149361c8a0717p164a9ajsna899a38fb930",
+                    "X-RapidAPI-Host": "contextualwebsearch-websearch-v1.p.rapidapi.com"
+                }
+            };
+            //() são parâmetros.
+            // calback - função executa no final de outra função.
+            $.ajax(settings).done(function (response) {
+                console.log(response);
+            
+                //Instanciar o modelo.
+                //this o objeto que está chamando a função.(arquivo)
+                let oImageModel = this.getView().getModel("ModeloImagem");
+                let oDadosImage = oImageModel.getData();
+
+                //clear tabela interna  = array.
+
+                oDadosImage.Imagens = [];
+
+            // loop que adiociona dados de uma tabela em outra tabela.
+            let listaResultados = response.value;
+            let newItem;   
+
+            //vamos ao loop = for
+            
+            for (var i =0; i < listaResultados.length; i++){
+                //read table pelo indice.
+             
+             newItem = listaResultados[i];
+             
+            // append dos dados.
+            oDadosImage.Imagens.push(newItem);
+
+            }
+
+            oImageModel.refresh();
+
+
+
+
+            
+            }.bind(this) //vai enxergar as variáveis que estão na função superior
+
+     
+
+
+
+
+
+
+
+
+            
+            );      
             
         }
 
